@@ -28,7 +28,7 @@ public class ARUIManager : MonoBehaviour
     public bool IsReadyToPlaceObject { get; set; }
     public bool IsReadyToControl { get; set; }
     public ARSession arSession;
-    public static event Action OnARPlaceObject;
+    public static event Action<Vector3, Quaternion> OnARPlaceObject;
     void Start()
     {
         Screen.orientation = ScreenOrientation.Landscape;
@@ -52,7 +52,6 @@ public class ARUIManager : MonoBehaviour
                 }
             }
         }
-        AllowInteractingObject(ObjectManager.Instance.CurrentObject.activeSelf);
     }
     public void OnActivePointer(Pose pose)
     {
@@ -73,19 +72,19 @@ public class ARUIManager : MonoBehaviour
     }
     void PlaceObject()
     {
-        OnARPlaceObject?.Invoke();
+        OnARPlaceObject?.Invoke(arPointer.transform.position, arPointer.transform.rotation);
     }
 
-    public void PlaceARObject()
+    public void PlaceARObject(Vector3 position, Quaternion rotation)
     {   
-        ObjectManager.Instance.InstantiateARObject(arPointer.transform.position, arPointer.transform.rotation);
+        ObjectManager.Instance.InstantiateARObject(position, rotation);
+        IsReadyToControl = true;
+        IsReadyToPlaceObject = false;
+        IsStartAR = true;
+        AllowInteractingObject(IsReadyToControl);
     }
     void AllowInteractingObject(bool _isReadyToControl)
     {
-        IsReadyToControl = _isReadyToControl;
-        IsReadyToPlaceObject = !_isReadyToControl;
-        IsStartAR = _isReadyToControl;
-
         ModeManager.Instance.UIComponentCommon.SetActive(_isReadyToControl);
         UIComponentAR.SetActive(!IsReadyToControl);
         arPointer.SetActive(!_isReadyToControl);

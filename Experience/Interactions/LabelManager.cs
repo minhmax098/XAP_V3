@@ -19,7 +19,7 @@ public class LabelManager : MonoBehaviour
         }
     }
 
-    private const float LONG_LINE_FACTOR = 0.8f;
+    private const float LONG_LINE_FACTOR = 1f; // Between 0 and 1
     private int childCount;
     private Vector3 centerPosition;
     public List<GameObject> listLabelObjects = new List<GameObject>(); 
@@ -54,16 +54,21 @@ public class LabelManager : MonoBehaviour
 
     public void CreateLabel()
     {
-        childCount = ObjectManager.Instance.CurrentObject.transform.childCount;
+        // childCount = ObjectManager.Instance.CurrentObject.transform.childCount;
+        childCount = ObjectManager.Instance.OriginObject.transform.childCount;
         if (childCount == 0)
         {
             return;
         }
 
-        centerPosition = CalculateCentroid(ObjectManager.Instance.CurrentObject);
+        // centerPosition = CalculateCentroid(ObjectManager.Instance.CurrentObject);
+        centerPosition = CalculateCentroid(ObjectManager.Instance.OriginObject);
+
+        Debug.Log("Centerposition x: " + centerPosition.x + ", Centerposition y: " + centerPosition.y + ", Centerposition z: " + centerPosition.z);
 
         listChildrenTransform.Clear();
-        GetLastChildren(ObjectManager.Instance.CurrentObject.transform);
+        // GetLastChildren(ObjectManager.Instance.CurrentObject.transform);
+        GetLastChildren(ObjectManager.Instance.OriginObject.transform);
 
         foreach (Transform child in listChildrenTransform)
         {
@@ -76,7 +81,8 @@ public class LabelManager : MonoBehaviour
         }
     }
 
-    private void GetLastChildren(Transform childTranform){
+    private void GetLastChildren(Transform childTranform)
+    {
         if (childTranform.parent && childTranform.childCount == 0)
         {
             listChildrenTransform.Add(childTranform);
@@ -90,7 +96,8 @@ public class LabelManager : MonoBehaviour
         }
     }
 
-    private Vector3 CalculateCentroid(GameObject obj){
+    private Vector3 CalculateCentroid(GameObject obj)
+    {
         Transform[] children;
         Vector3 centroid = new Vector3(0, 0, 0);
 
@@ -98,7 +105,8 @@ public class LabelManager : MonoBehaviour
 
         foreach (var child in children)
         {
-            if(child != obj.transform){
+            if(child != obj.transform)
+            {
                 centroid += child.transform.position;
             }  
         }
@@ -108,20 +116,22 @@ public class LabelManager : MonoBehaviour
 
     public Bounds GetParentBound(GameObject parentObject, Vector3 center)
     {
-        foreach (Transform child in parentObject.transform){
+        foreach (Transform child in parentObject.transform)
+        {
             center += child.gameObject.GetComponent<Renderer>().bounds.center;
         }
 
         center /= parentObject.transform.childCount;
         
         Bounds bounds = new Bounds(center, Vector3.zero);
-        foreach(Transform child in parentObject.transform){
+        foreach(Transform child in parentObject.transform)
+        {
             bounds.Encapsulate(child.gameObject.GetComponent<Renderer>().bounds);
         }
         return bounds;
     }
 
-    public void SetLabel(GameObject currentObject, GameObject parentObject, Vector3 rootPosition, GameObject label)
+    public async void SetLabel(GameObject currentObject, GameObject parentObject, Vector3 rootPosition, GameObject label)
     {
         GameObject line = label.transform.GetChild(0).gameObject; 
         GameObject labelName = label.transform.GetChild(1).gameObject;
@@ -129,11 +139,25 @@ public class LabelManager : MonoBehaviour
 
         Bounds parentBounds = GetParentBound(parentObject, rootPosition);
         Bounds objectBounds = currentObject.GetComponent<Renderer>().bounds;
-        Vector3 dir = rootPosition - currentObject.transform.position;
 
-        labelName.transform.localPosition = LONG_LINE_FACTOR * - 1 / parentObject.transform.localScale.x * parentBounds.max.magnitude * label.transform.InverseTransformPoint(dir).normalized;
-        
+        // dir is the world vector3 present the direction between center of the game object and the center of currentObject
+        // Vector3 dir = currentObject.transform.position - rootPosition; // Old 
+        Vector3 dir = currentObject.transform.localPosition - rootPosition; // New Idea, from SeparateManager 
+ 
+        Debug.Log("Magnitude: " + parentBounds.max.magnitude); // Magnitude not a constant !!!!
+        // labelName.transform.localPosition = label.transform.InverseTransformPoint(LONG_LINE_FACTOR * parentBounds.max.magnitude * label.transform.InverseTransformDirection(dir).normalized); // NOT GOOD
+        // labelName.transform.localPosition = label.transform.InverseTransformPoint(LONG_LINE_FACTOR * parentBounds.max.magnitude * dir.normalized);
+        // labelName.transform.localPosition = label.transform.InverseTransformVector(LONG_LINE_FACTOR * parentBounds.max.magnitude * dir.normalized); 
+        // labelName.transform.localPosition = 1 / 0.2f * parentBounds.max.magnitude * label.transform.InverseTransformDirection(LONG_LINE_FACTOR * dir.normalized); 
+        // labelName.transform.localPosition = label.transform.InverseTransformDirection(LONG_LINE_FACTOR * parentBounds.max.magnitude * dir.normalized); 
+        // labelName.transform.localPosition = LONG_LINE_FACTOR * 1 / parentObject.transform.localScale.x * parentBounds.max.magnitude * label.transform.InverseTransformDirection(dir).normalized; 
+
+
+        // New Idea
+        labelName.transform.localPosition = 1 / 0.2f * parentBounds.max.magnitude * dir.normalized;
+
         line.GetComponent<LineRenderer>().useWorldSpace = false;
+        line.GetComponent<LineRenderer>().widthMultiplier = 0.25f * parentObject.transform.localScale.x;  // 0.2 -> 0.05 then 0.02 -> 0.005
         line.GetComponent<LineRenderer>().SetVertexCount(2);
         line.GetComponent<LineRenderer>().SetPosition(0, objectBounds.center);
         line.GetComponent<LineRenderer>().SetPosition(1, labelName.transform.localPosition);

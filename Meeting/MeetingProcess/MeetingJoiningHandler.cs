@@ -108,7 +108,7 @@ public class MeetingJoiningHandler : MonoBehaviourPunCallbacks
         {
             numberOfJoiningAttempt = 0;
             LoadingManager.Instance.HideLoading();
-            Toast.Show(MeetingConfig.invalidMeetingCodeMessage, MeetingConfig.invalidMeetingCodeToastDuration);
+            Toast.Show(MeetingConfig.invalidMeetingCodeMessage, MeetingConfig.longToastDuration);
         }
         else
         {

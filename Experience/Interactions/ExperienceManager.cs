@@ -317,8 +317,8 @@ public class ExperienceManager : MonoBehaviour
         MediaManager.Instance.StopMedia();
     }
 
-    void OnARPlaceObject()
+    void OnARPlaceObject(Vector3 position, Quaternion rotation)
     {
-        ARUIManager.Instance.PlaceARObject();
+        ARUIManager.Instance.PlaceARObject(position, rotation);
     }
 }

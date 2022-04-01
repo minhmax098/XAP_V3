@@ -80,6 +80,8 @@ public class MeetingExperienceManager : MonoBehaviourPunCallbacks, IInRoomCallba
         ObjectManager.onChangeCurrentObject += OnChangeCurrentObject;
         ObjectManager.onResetObject += ResetMeetingObject;
         ARUIManager.OnARPlaceObject += OnARPlaceObject;
+        MeetingCloudAnchorManager.onHostCloudAnchorFailed += OnHostCloudAnchorFailed;
+        MeetingCloudAnchorManager.onResolveCloudAnchorFailed += OnResolveCloudAnchorFailed;
     }
     public override void OnDisable()
     {
@@ -89,7 +91,9 @@ public class MeetingExperienceManager : MonoBehaviourPunCallbacks, IInRoomCallba
         TreeNodeManager.onClickNodeTree -= OnClickNodeTree;
         ObjectManager.onChangeCurrentObject -= OnChangeCurrentObject;
         ObjectManager.onResetObject -= ResetMeetingObject;
-        ARUIManager.OnARPlaceObject += OnARPlaceObject;
+        ARUIManager.OnARPlaceObject -= OnARPlaceObject;
+        MeetingCloudAnchorManager.onHostCloudAnchorFailed -= OnHostCloudAnchorFailed;
+        MeetingCloudAnchorManager.onResolveCloudAnchorFailed -= OnResolveCloudAnchorFailed;
     }
 
     /**
@@ -196,8 +200,8 @@ public class MeetingExperienceManager : MonoBehaviourPunCallbacks, IInRoomCallba
     void SetupUIForMembers(bool isHost)
     {
         interactionBtnsGroup.SetActive(isHost);
-        btnAudio.gameObject.SetActive(isHost);
-        btnMenu.gameObject.SetActive(isHost);
+        // btnAudio.gameObject.SetActive(isHost);
+        // btnMenu.gameObject.SetActive(isHost);
     }
 
     void OnMeetingObjectInstantiate(GameObject newObject)
@@ -237,8 +241,8 @@ public class MeetingExperienceManager : MonoBehaviourPunCallbacks, IInRoomCallba
 
     IEnumerator FinishMeeting(string nextScene)
     {
-        Toast.Show(MeetingConfig.hostLeftMessage, MeetingConfig.finishMeetingDuration);
-        yield return new WaitForSeconds(MeetingConfig.finishMeetingDuration);
+        Toast.Show(MeetingConfig.hostLeftMessage, MeetingConfig.shortToastDuration);
+        yield return new WaitForSeconds(MeetingConfig.shortToastDuration);
         if (PhotonNetwork.IsConnected)
         {
             PhotonNetwork.Disconnect();
@@ -257,8 +261,8 @@ public class MeetingExperienceManager : MonoBehaviourPunCallbacks, IInRoomCallba
         }
         if (SceneManager.GetActiveScene().name == SceneConfig.meetingExperience)
         {
-            Toast.Show(MeetingConfig.lostConnection, MeetingConfig.lostConnectionMessageDuration);
-            yield return new WaitForSeconds(MeetingConfig.lostConnectionMessageDuration);
+            Toast.Show(MeetingConfig.lostConnection, MeetingConfig.longToastDuration);
+            yield return new WaitForSeconds(MeetingConfig.longToastDuration);
             SceneManager.LoadScene(SceneNameManager.prevScene);
         }
     }
@@ -436,15 +440,36 @@ public class MeetingExperienceManager : MonoBehaviourPunCallbacks, IInRoomCallba
         }
     }
 
-    void OnARPlaceObject()
+    void OnARPlaceObject(Vector3 position, Quaternion rotation)
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            ARUIManager.Instance.PlaceARObject();
+            ARUIManager.Instance.PlaceARObject(position, rotation);
+            MeetingCloudAnchorManager.Instance.HostCloudAnchor(ObjectManager.Instance.OriginObject.GetComponent<ARAnchor>());
         }
         else
         {
             Toast.Show(MeetingConfig.waitForHostPlaceObject, MeetingConfig.toastDuration);
         }
+    }
+
+    public void ShareCloudAnchorId(string cloudAnchorId)
+    {
+        Toast.Show(cloudAnchorId, MeetingConfig.longToastDuration);
+    }
+
+    public void OnHostCloudAnchorFailed(string message)
+    {
+        Toast.Show(message, MeetingConfig.longToastDuration);
+    }
+
+    public void ResolveCloudAnchorTransform(Transform cloudAnchorTransform)
+    {
+        Toast.Show(cloudAnchorTransform.ToString(), MeetingConfig.longToastDuration);
+    }
+
+    public void OnResolveCloudAnchorFailed(string message)
+    {
+        Toast.Show(message, MeetingConfig.longToastDuration);
     }
 }

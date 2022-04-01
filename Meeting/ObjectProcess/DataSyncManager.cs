@@ -30,7 +30,10 @@ public class DataSyncManager : MonoBehaviourPun, IPunObservable
             }
             if (isSynchronizedPosition)
             {
-                stream.SendNext(currentTransform.localPosition);
+                if (ModeManager.Instance.Mode == ModeManager.MODE_EXPERIENCE.MODE_3D)
+                {
+                    stream.SendNext(currentTransform.localPosition);
+                }
             }
             if (isSynchronizedRotation)
             {
@@ -61,7 +64,10 @@ public class DataSyncManager : MonoBehaviourPun, IPunObservable
             }
             if (isSynchronizedPosition)
             {
-                currentTransform.localPosition = (Vector3)stream.ReceiveNext();
+                if (ModeManager.Instance.Mode == ModeManager.MODE_EXPERIENCE.MODE_3D)
+                {
+                    currentTransform.localPosition = (Vector3)stream.ReceiveNext();
+                }
             }
             if (isSynchronizedRotation)
             {

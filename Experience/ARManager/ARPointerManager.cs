@@ -11,7 +11,6 @@ public class ARPointerManager : MonoBehaviour
     List<ARRaycastHit> hitList = new List<ARRaycastHit>();
     Vector2 centerOfScreen;
     public GameObject pointer;
-    
 
     // Start is called before the first frame update
     void Start()
@@ -25,6 +24,7 @@ public class ARPointerManager : MonoBehaviour
         {
             return;
         }
+
         if (!ObjectManager.Instance.OriginObject.activeSelf)
         {
             DetectPointer();
