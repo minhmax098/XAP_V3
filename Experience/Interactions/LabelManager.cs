@@ -73,6 +73,8 @@ public class LabelManager : MonoBehaviour
         foreach (Transform child in listChildrenTransform)
         {
             GameObject labelObject = Instantiate(Resources.Load(PathConfig.MODEL_TAG) as GameObject);
+            labelObject.transform.localScale *=  ObjectManager.Instance.OriginScale.x / ObjectManager.Instance.OriginObject.transform.localScale.x ;
+            
             TagHandler.Instance.AddTag(labelObject);
             labelObject.transform.SetParent(child.gameObject.transform, false); 
             labelObject.transform.localPosition = new Vector3(0, 0, 0);
@@ -135,6 +137,7 @@ public class LabelManager : MonoBehaviour
     {
         GameObject line = label.transform.GetChild(0).gameObject; 
         GameObject labelName = label.transform.GetChild(1).gameObject;
+        
         labelName.transform.GetChild(0).GetComponent<TextMeshPro>().text = currentObject.name;
 
         Bounds parentBounds = GetParentBound(parentObject, rootPosition);
@@ -142,9 +145,9 @@ public class LabelManager : MonoBehaviour
 
         // dir is the world vector3 present the direction between center of the game object and the center of currentObject
         // Vector3 dir = currentObject.transform.position - rootPosition; // Old 
-        Vector3 dir = currentObject.transform.localPosition - rootPosition; // New Idea, from SeparateManager 
+        Vector3 dir = currentObject.transform.localPosition - rootPosition; // New
  
-        Debug.Log("Magnitude: " + parentBounds.max.magnitude); // Magnitude not a constant !!!!
+        Debug.Log("Magnitude: " + parentBounds.max.magnitude); // Magnitude not a constant
         // labelName.transform.localPosition = label.transform.InverseTransformPoint(LONG_LINE_FACTOR * parentBounds.max.magnitude * label.transform.InverseTransformDirection(dir).normalized); // NOT GOOD
         // labelName.transform.localPosition = label.transform.InverseTransformPoint(LONG_LINE_FACTOR * parentBounds.max.magnitude * dir.normalized);
         // labelName.transform.localPosition = label.transform.InverseTransformVector(LONG_LINE_FACTOR * parentBounds.max.magnitude * dir.normalized); 
@@ -152,15 +155,18 @@ public class LabelManager : MonoBehaviour
         // labelName.transform.localPosition = label.transform.InverseTransformDirection(LONG_LINE_FACTOR * parentBounds.max.magnitude * dir.normalized); 
         // labelName.transform.localPosition = LONG_LINE_FACTOR * 1 / parentObject.transform.localScale.x * parentBounds.max.magnitude * label.transform.InverseTransformDirection(dir).normalized; 
 
-
-        // New Idea
+        // New
         labelName.transform.localPosition = 1 / 0.2f * parentBounds.max.magnitude * dir.normalized;
 
         line.GetComponent<LineRenderer>().useWorldSpace = false;
         line.GetComponent<LineRenderer>().widthMultiplier = 0.25f * parentObject.transform.localScale.x;  // 0.2 -> 0.05 then 0.02 -> 0.005
         line.GetComponent<LineRenderer>().SetVertexCount(2);
         line.GetComponent<LineRenderer>().SetPosition(0, objectBounds.center);
+        
         line.GetComponent<LineRenderer>().SetPosition(1, labelName.transform.localPosition);
+        Debug.Log("Label name x: " + labelName.transform.localPosition.x + ", Label name y: " + labelName.transform.localPosition.y + ", Label name z: " + labelName.transform.localPosition.z);
+        Debug.Log("Line x: " + line.transform.localPosition.x + ", Line y: " + line.transform.localPosition.y + ", Line z: " + labelName.transform.localPosition.z);
+
         line.GetComponent<LineRenderer>().SetColors(Color.black, Color.black);
     }
 

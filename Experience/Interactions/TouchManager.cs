@@ -33,6 +33,9 @@ public class TouchManager : MonoBehaviour
     Vector3 originScale;
 
     Vector3 originLabelScale = new Vector3(1f, 1f, 1f);
+    Vector3 originLabelTagScale = new Vector3(7f, 1f, 1f);
+    Vector3 originLineScale = new Vector3(1, 1, 1);
+
     float currentDelta;
     float scaleFactor;
     Vector2 originPosition;
@@ -209,6 +212,8 @@ public class TouchManager : MonoBehaviour
             if (LabelManager.Instance.listLabelObjects.Count > 0)
             {
                 originLabelScale = LabelManager.Instance.listLabelObjects[0].transform.localScale;
+                // originLabelTagScale = LabelManager.Instance.listLabelObjects[0].transform.GetChild(1).gameObject.transform.localScale;
+                // originLineScale = LabelManager.Instance.listLabelObjects[0].transform.GetChild(0).gameObject.transform.localScale;
             }            
         }
         else if (touchZero.phase == TouchPhase.Moved || touchOne.phase == TouchPhase.Moved)
@@ -221,7 +226,15 @@ public class TouchManager : MonoBehaviour
             
             foreach (GameObject obj in LabelManager.Instance.listLabelObjects)
             {
-                obj.transform.localScale = originLabelScale / scaleFactor;
+                if (originLabelScale.x < 0.9 && scaleFactor > 1){
+
+                }
+                else {
+                    obj.transform.localScale = originLabelScale / scaleFactor;
+                }
+                // obj.transform.localScale = originLabelScale / scaleFactor;
+                // obj.transform.GetChild(1).gameObject.transform.localScale =  originLabelTagScale / scaleFactor;
+
             }
         }
     }

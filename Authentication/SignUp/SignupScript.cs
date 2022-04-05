@@ -238,7 +238,6 @@ public class SignupScript : MonoBehaviour
             if (request.responseCode == 400)
             {
                pop.PopUp(userDetail.message);
-               // Debug.Log("Email format incorrect"); 
             }
         }
         else

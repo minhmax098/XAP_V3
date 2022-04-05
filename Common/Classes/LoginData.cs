@@ -9,8 +9,8 @@ public class LoginData
     public string message; 
     public Data[] data;
 }
-[System.Serializable]
 
+[System.Serializable]
 public class Data {
     public string token;
     public UserInfomation user;

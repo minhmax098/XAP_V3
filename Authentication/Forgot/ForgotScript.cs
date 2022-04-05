@@ -44,6 +44,7 @@ public class ForgotScript : MonoBehaviour
             ChangeUIStatus(emailInput, EmailWarning, true);
             validateEmail.SetActive(false); 
             check = true; 
+            nextBtn.interactable = false; 
         }
         if (email != "")
         {
@@ -57,20 +58,23 @@ public class ForgotScript : MonoBehaviour
         {
             ChangeUIStatus(emailInput, EmailWarning, true);
             validateEmail.SetActive(false);
-            nextBtn.enabled = false;
+            // nextBtn.enabled = false;
+            nextBtn.interactable = false; 
         }
         else if (!emailRgx.IsMatch(data))
         {
             Debug.Log("Email ko hop le !!!");
             ChangeUIStatus(emailInput, validateEmail, true);
             EmailWarning.SetActive(false);  
-            nextBtn.enabled = false;   
+            // nextBtn.enabled = false;   
+            nextBtn.interactable = false;
         }
         else 
         {
             ChangeUIStatus(emailInput, EmailWarning, false);
             validateEmail.SetActive(false);
-            nextBtn.enabled = true;
+            // nextBtn.enabled = true;
+            nextBtn.interactable = true; 
         }
     }
     private void ChangeUIStatus(InputField input, GameObject warning, bool status)

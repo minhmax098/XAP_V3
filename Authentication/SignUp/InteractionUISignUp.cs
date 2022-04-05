@@ -9,8 +9,6 @@ public class InteractionUISignUp : MonoBehaviour
     public GameObject waitingScreen; 
     public GameObject switchToHomeNoSignIn;
     public GameObject switchToSignInBtn; 
-
-    // Start is called before the first frame update
     void Start()
     {
         InitUI(); 

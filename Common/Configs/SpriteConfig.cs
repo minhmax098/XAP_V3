@@ -10,4 +10,5 @@ public static class SpriteConfig
     public static string btnXrayAvailable = "Sprites/btn-xray";
     public static string imageInputFieldNormal = "Sprites/Authen/Valid/Rectangle356";
     public static string imageInputFieldWarning = "Sprites/Authen/Invalid/HideBorder";
+    public static string imageInputFieldBold = "Sprites/Authen/Bold/BoldHideBorder"; 
 }

@@ -128,6 +128,19 @@ namespace ListOrgan
             StartCoroutine(loadLessons(listLessons.data, listLessons.meta.totalElements, true)); 
         }
 
+        private void ChangeUIStatus(InputField input, GameObject warning, bool status)
+        {
+            warning.SetActive(status);
+            if (status)
+            {
+                input.GetComponent<Image>().sprite = Resources.Load<Sprite>(SpriteConfig.imageInputFieldBold); 
+            }
+            else 
+            {
+                input.GetComponent<Image>().sprite = Resources.Load<Sprite>(SpriteConfig.imageInputFieldNormal);
+            }
+        }
+
         IEnumerator loadLessons(Lesson[] lessons, int totalLessons, bool isRenewLesssons)
         {
             if (isRenewLesssons)

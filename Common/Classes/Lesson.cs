@@ -5,17 +5,6 @@ using UnityEngine;
 [System.Serializable]
 public class Lesson
 {
-    // public string id;
-    // public string name;
-    // public int categoryId;
-    // public string description;
-    // public int authorId;
-    // public int courseId;
-    // public int modelId;
-    // public string labelFileId;
-    // public string thumbnail_file_path;
-    // public string introAudioFileId;
-    // public string introVideoFileId;
     public int lessonId; 
     public string lessonThumbnail; 
     public string lessonTitle; 
